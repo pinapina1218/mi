@@ -1,0 +1,119 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BIM検定2級 章別クイズ</title>
+<style>
+body { font-family: Arial, sans-serif; padding: 20px; background: #f7f7f7; }
+h1 { text-align: center; }
+.menu, .question { background: #fff; padding: 15px; margin: 10px 0; border-radius: 8px; }
+button { display: block; margin: 8px 0; padding: 10px; width: 100%; border-radius: 5px; border: 1px solid #ccc; background: #eee; cursor: pointer; }
+.correct { background: #d4f8d4; }
+.incorrect { background: #f8d4d4; }
+#result { text-align: center; font-size: 1.2em; margin-top: 20px; }
+</style>
+</head>
+<body>
+
+<h1>BIM検定2級 章別クイズ</h1>
+<div id="menu" class="menu">
+  <h2>章を選んでください</h2>
+  <button onclick="startChapter(1)">第1章 BIMの基本</button>
+  <button onclick="startChapter(2)">第2章 BIMの実践</button>
+  <button onclick="startChapter(3)">第3章 BIMと人材</button>
+  <button onclick="startChapter(4)">第4章 BIMの発展</button>
+</div>
+
+<div id="quiz"></div>
+<div id="result"></div>
+<button id="backBtn" style="display:none;" onclick="goMenu()">← 章選択に戻る</button>
+
+<script>
+// 各章の問題データ
+const chapters = {
+  1: [
+    {question: "BIMは建物の3D形状データだけでなく、属性情報も統合したデジタルモデルを指す。", answers: ["正しい", "誤り"], correct:0},
+    {question: "ベクターデータは拡大縮小しても画質が劣化しにくい。", answers: ["正しい", "誤り"], correct:0},
+    {question: "ワイヤーフレームモデルは質感まで表現できる。", answers: ["正しい", "誤り"], correct:1},
+    {question: "IFCは異なるBIMソフト間でデータ共有する標準フォーマットである。", answers: ["正しい", "誤り"], correct:0}
+  ],
+  2: [
+    {question: "LODはBIMモデルの詳細度や完成度を示す指標である。", answers: ["正しい", "誤り"], correct:0},
+    {question: "施工段階ではBIMは使えない。", answers: ["正しい", "誤り"], correct:1},
+    {question: "干渉チェックや施工シミュレーションはBIMで可能である。", answers: ["正しい", "誤り"], correct:0},
+    {question: "4D BIMは時間情報を組み込んだ施工シミュレーションを指す。", answers: ["正しい", "誤り"], correct:0}
+  ],
+  3: [
+    {question: "BIMマネジャーはプロジェクト全体のBIM推進を統括する役割である。", answers: ["正しい","誤り"], correct:0},
+    {question: "BIMモデラは主にBIMモデルを作成・修正する技術者である。", answers: ["正しい","誤り"], correct:0},
+    {question: "BIMコーディネーターは設計・施工関係者間の調整役を担う。", answers: ["正しい","誤り"], correct:0}
+  ],
+  4: [
+    {question: "IFCはBIM標準化の中心的なデータ交換仕様である。", answers: ["正しい","誤り"], correct:0},
+    {question: "ジェネレーティブデザインは自動化された設計案生成を意味する。", answers: ["正しい","誤り"], correct:0},
+    {question: "ロボット施工や3DプリンタもBIM活用の一環として期待されている。", answers: ["正しい","誤り"], correct:0}
+  ]
+};
+
+let currentChapter = null;
+let currentIdx = 0;
+let score = 0;
+let quizData = [];
+
+function startChapter(ch){
+  currentChapter = ch;
+  quizData = chapters[ch];
+  currentIdx = 0;
+  score = 0;
+  document.getElementById('menu').style.display = 'none';
+  document.getElementById('backBtn').style.display = 'inline-block';
+  loadQuestion();
+}
+
+function loadQuestion(){
+  const quizDiv = document.getElementById('quiz');
+  const resultDiv = document.getElementById('result');
+  quizDiv.innerHTML = '';
+  resultDiv.innerHTML = '';
+  if(currentIdx < quizData.length){
+    const q = quizData[currentIdx];
+    const qDiv = document.createElement('div');
+    qDiv.classList.add('question');
+    qDiv.innerHTML = `<h3>問${currentIdx+1}: ${q.question}</h3>`;
+    q.answers.forEach((ans,idx)=>{
+      const btn = document.createElement('button');
+      btn.textContent = ans;
+      btn.onclick = ()=>checkAnswer(idx,btn);
+      qDiv.appendChild(btn);
+    });
+    quizDiv.appendChild(qDiv);
+  } else {
+    resultDiv.innerHTML = `終了！<br>スコア: ${score}/${quizData.length} (${Math.round(score/quizData.length*100)}%)`;
+  }
+}
+
+function checkAnswer(selected, btn){
+  const correct = quizData[currentIdx].correct;
+  const buttons = btn.parentNode.querySelectorAll('button');
+  buttons.forEach((b,i)=>{
+    if(i===correct) b.classList.add('correct');
+    else if(i===selected) b.classList.add('incorrect');
+    b.disabled = true;
+  });
+  if(selected===correct) score++;
+  currentIdx++;
+  setTimeout(loadQuestion,1000);
+}
+
+function goMenu(){
+  document.getElementById('menu').style.display='block';
+  document.getElementById('quiz').innerHTML='';
+  document.getElementById('result').innerHTML='';
+  document.getElementById('backBtn').style.display='none';
+}
+</script>
+
+</body>
+</html>
